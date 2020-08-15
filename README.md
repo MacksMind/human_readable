@@ -1,8 +1,13 @@
 # HumanReadable
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/human_readable`. To experiment with that code, run `bin/console` for an interactive prompt.
+Human readable random tokens with limited ambiguous characters.
 
-TODO: Delete this and the text above, and describe your gem
+Focus is readability in poor conditions or from potentially damaged printed documents rather than cryptographic uses.
+Despite this focus, SecureRandom is used to help avoid collisions.
+
+Inspired by Douglas Crockford's [Base 32](https://www.crockford.com/base32.html), but attempts to correct mistakes by substituting the most likely misread.
+To make substitution safer, the token includes a check character generated using the [Luhn mod N algorithm](https://en.wikipedia.org/wiki/Luhn_mod_N_algorithm).
+Default character set is all caps based on this published study on [text legibility](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2016788/), which matches Crockford as well.
 
 ## Installation
 
@@ -22,7 +27,29 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+For 10 characters of the default character set, use `HumanReadable.generate`.
+For other lengths (2..x), use `HumanReadable.generate(output_size: 50)`.
+
+## Configuration
+
+* Change available characters and substitution by manipulating `substitution_hash`
+* To include non-default characters, add a self-reference to the hash
+* Inspect available characters using `HumanReadable.charset`
+* For convenience, numbers and symbols are allowed in the hash and are translated to characters during usage
+
+**CAUTION:** Changing `substitution_hash` keys alters the check character, invalidating previous tokens.
+
+
+    HumanReadable.configure do |c|
+      # Default: substitution_hash = { I: 1, L: 1, O: 0, U: :V }
+
+      # Modifications
+      c.substitution_hash[:B] = 8
+      c.substitution_hash[:U] = nil
+      c.substitution_hash['$'] = '$'
+      # or equivalently
+      c.substitution_hash = { I: 1, L: 1, O: 0, U: nil, B: 8, '$' => '$'}
+    end
 
 ## Development
 
@@ -32,7 +59,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/human_readable.
+Bug reports and pull requests are welcome on GitHub at https://github.com/MacksMind/human_readable.
 
 
 ## License

@@ -1,3 +1,9 @@
+# frozen_string_literal: true
+
+# Copyright 2020 Mack Earnhardt
+
 module HumanReadable
-  VERSION = "0.1.0"
+  # Gem version
+  VERSION = '0.8.0'
+  public_constant :VERSION
 end

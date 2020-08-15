@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Copyright 2020 Mack Earnhardt
+
+require 'bundler/setup'
+require 'human_readable'
+
+t = Time.now
+
+500_000.times do
+  token = HumanReadable.generate
+  raise unless HumanReadable.valid_token?(token)
+end
+
+puts(Time.now - t)
