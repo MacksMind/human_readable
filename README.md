@@ -1,3 +1,4 @@
+[![Gem Version](https://badge.fury.io/rb/human_readable.svg)](https://badge.fury.io/rb/human_readable)
 # HumanReadable
 
 Human readable random tokens with limited ambiguous characters.

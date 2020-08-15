@@ -10,12 +10,11 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Mack Earnhardt']
   spec.email         = ['mack@agilereasoning.com']
 
-  spec.summary       = 'Human readable random tokens with no ambiguous characters'
+  spec.summary       = 'Human readable random tokens with limited ambiguous characters.'
   spec.description   = <<~DESC
-    Human readable random tokens with no ambiguous characters
-
-    Tranlates invalid characters to their most likely original value
-    and validates using a checksum.
+    Human readable random tokens with limited ambiguous characters.
+    Translates invalid characters to their most likely original value
+    and validates using a check character.
   DESC
   spec.homepage      = 'https://github.com/MacksMind/human_readable'
   spec.license       = 'MIT'
