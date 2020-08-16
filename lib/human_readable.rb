@@ -20,7 +20,7 @@ module HumanReadable
     #     c.substitution_hash[:B] = 8
     #     c.substitution_hash[:U] = nil
     #     # or equivalently
-    #     c.substitution_hash = { I: 1, L: 1, O: 0, U: nil, B: 8}
+    #     c.substitution_hash = { %w[I L] => 1, O: 0, U: nil, B: 8}
     #
     #     # Extend charset
     #     c.extend_chars = %w[~ ! @ $]
@@ -35,7 +35,7 @@ module HumanReadable
     # and symbols are allowed in the hash and are translated to characters during usage.
     #
     # DEFAULT:
-    #   substitution_hash: { I: 1, L: 1, O: 0, U: :V }
+    #   substitution_hash: { %w[I L] => 1, O: 0, U: :V }
     #
     # @note Changing substitution_hash keys alters the check character, invalidating previous tokens.
     # @return [nil]
@@ -115,7 +115,7 @@ module HumanReadable
 
     def configuration
       @configuration ||= OpenStruct.new(
-        substitution_hash: { I: 1, L: 1, O: 0, U: :V },
+        substitution_hash: { %w[I L] => 1, O: 0, U: :V },
         extend_chars: [],
         exclude_chars: []
       )
@@ -197,6 +197,7 @@ module HumanReadable
       @nil_substitutions ||=
         begin
           array = configuration.substitution_hash.each.map { |k, v| k if v.nil? }
+          array.flatten!
           array.compact!
           array.map!(&:to_s)
           array.map!(&:upcase)
@@ -207,6 +208,7 @@ module HumanReadable
       @trans_from ||=
         begin
           array = configuration.substitution_hash.each.map { |k, v| k unless v.nil? }
+          array.flatten!
           array.compact!
           array.map!(&:to_s)
           array.map!(&:upcase)
@@ -217,7 +219,11 @@ module HumanReadable
     def trans_to
       @trans_to ||=
         begin
-          array = configuration.substitution_hash.values
+          array =
+            configuration.substitution_hash.map do |k, v|
+              (k.is_a?(Array) ? Array.new(k.size) { v } : v) unless v.nil?
+            end
+          array.flatten!
           array.compact!
           array.map!(&:to_s)
           array.map!(&:upcase)

@@ -129,22 +129,16 @@ RSpec.describe HumanReadable do
     end
 
     context 'with accidental substitutions' do
-      let(:trans_hash) do
-        h = {}
-        (0..described_class.__send__(:trans_to).size - 1).each do |i|
-          trans_to = described_class.__send__(:trans_to)[i].chars
-          h[trans_to] ||= []
-          h[trans_to] << described_class.__send__(:trans_from)[i].chars
-        end
-
-        h
-      end
+      # rubocop:disable Style/StringHashKeys
+      # Need character keys for the reverse substitution to work
+      let(:reverse_substitution_hash) { { '1' => %w[I L], '0' => ['O'], 'V' => ['U'] } }
+      # rubocop:enable Style/StringHashKeys
 
       let(:input) do
         valid_tokens.map do |token|
           array =
-            token.chars.each do |c|
-              trans_hash[c]&.sample || c
+            token.chars.map do |c|
+              reverse_substitution_hash[c]&.sample || c
             end
           array.join
         end
