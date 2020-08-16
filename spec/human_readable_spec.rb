@@ -12,8 +12,8 @@ RSpec.describe HumanReadable do
   end
 
   describe '#charset' do
-    context 'with non-default chars in extended_chars' do
-      let(:extensions) { ['~', '@', '#', '$'] }
+    context 'with non-default chars in extend_chars' do
+      let(:extensions) { %w[~ @ # $] }
 
       before do
         described_class.configure do |c|
@@ -23,6 +23,20 @@ RSpec.describe HumanReadable do
 
       it 'extends the charset' do
         expect(described_class.charset & extensions).to match_array(extensions)
+      end
+    end
+
+    context 'with default chars in exclude_chars' do
+      let(:exclusions) { %w[F C K] }
+
+      before do
+        described_class.configure do |c|
+          c.exclude_chars = exclusions
+        end
+      end
+
+      it 'extends the charset' do
+        expect(described_class.charset & exclusions).to eq([])
       end
     end
   end

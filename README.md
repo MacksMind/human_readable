@@ -53,6 +53,9 @@ For other lengths (2..x), use `HumanReadable.generate(output_size: 50)`.
 
       # Extend charset
       c.extend_chars << %w[~ ! @ $]
+
+      # Exclude charset
+      c.exclude_chars = %w[F C K]
     end
 
 ## Development

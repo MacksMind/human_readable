@@ -23,7 +23,10 @@ module HumanReadable
     #     c.substitution_hash = { I: 1, L: 1, O: 0, U: nil, B: 8}
     #
     #     # Extend charset
-    #     c.extend_chars << %w[~ ! @ $]
+    #     c.extend_chars = %w[~ ! @ $]
+    #
+    #     # Exclude charset
+    #     c.exclude_chars = %w[F C K]
     #   end
     #
     # Specified keys won't be used during generation, and values will be substituted during
@@ -93,6 +96,7 @@ module HumanReadable
             trans_from.chars +
             trans_to.chars +
             configuration.extend_chars -
+            configuration.exclude_chars -
             nil_substitutions
           )
           array.uniq!
@@ -112,7 +116,8 @@ module HumanReadable
     def configuration
       @configuration ||= OpenStruct.new(
         substitution_hash: { I: 1, L: 1, O: 0, U: :V },
-        extend_chars: []
+        extend_chars: [],
+        exclude_chars: []
       )
     end
 
