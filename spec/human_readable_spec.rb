@@ -11,7 +11,7 @@ RSpec.describe HumanReadable do
     subject(:output) { described_class.generate }
 
     before do
-      described_class.instance_variables.each { |sym| described_class.instance_variable_set(sym, nil) }
+      described_class.reset
     end
 
     it 'generates a 10 digit token by default' do
@@ -76,7 +76,7 @@ RSpec.describe HumanReadable do
     let(:input) { valid_tokens }
 
     before do
-      described_class.instance_variables.each { |sym| described_class.instance_variable_set(sym, nil) }
+      described_class.reset
     end
 
     it { is_expected.to eq(valid_tokens) }

@@ -84,6 +84,11 @@ module HumanReadable
         end
     end
 
+    # Reset configuration and memoizations
+    def reset
+      instance_variables.each { |sym| remove_instance_variable(sym) }
+    end
+
   private
 
     def configuration
