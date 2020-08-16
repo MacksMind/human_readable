@@ -76,7 +76,12 @@ module HumanReadable
     #
     # DEFAULT: All number and uppercase letters except for ILOU
     def charset
-      @charset ||= (('0'..'9').to_a + ('A'..'Z').to_a - trans_from.chars + trans_to.chars - nil_substitutions).uniq
+      @charset ||=
+        begin
+          array = (('0'..'9').to_a + ('A'..'Z').to_a - trans_from.chars + trans_to.chars - nil_substitutions)
+          array.uniq!
+          array.sort!
+        end
     end
 
   private
