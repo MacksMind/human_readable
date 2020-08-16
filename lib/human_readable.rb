@@ -6,7 +6,7 @@ require 'human_readable/version'
 require 'ostruct'
 require 'securerandom'
 
-# Human readable random tokens with no ambiguous characters
+# Human readable random tokens with limited ambiguous characters
 module HumanReadable
   # +#generate+ output_size must be >= 2 due to check character
   class MinSizeTwo < StandardError; end
@@ -22,23 +22,25 @@ module HumanReadable
     #     c.substitution_hash = { I: 1, L: 1, O: 0, U: nil, B: 8, '$' => '$'}
     #   end
     #
+    # Specified keys won't be used during generation, and values will be substituted during
+    # validation, increasing the likelihood that a misread character can be restored. Extend
+    # or replace the substitutions to alter the character set. For convenience, digits
+    # and symbols are allowed in the hash and are translated to characters during usage.
+    #
     # DEFAULT:
     #   substitution_hash: { I: 1, L: 1, O: 0, U: :V }
     #
-    # Specified keys won't be used during generation, and values will be substituted during
-    # validation, increasing the likelihood that a misread character can be restored. Extend
-    # or replace the substitutions to use a different character set. For convenience, numbers
-    # and symbols are allowed in the hash and are translated to characters during usage.
-    # Alter as needed per examples below.
-    #
-    # *CAUTION:* Changing substitution_hash keys alters the check character, invalidating previous tokens.
+    # @note Changing substitution_hash keys alters the check character, invalidating previous tokens.
+    # @return [Hash] resulting substitution hash
     def configure
       yield(configuration)
+      configuration.substitution_hash
     end
 
     # Generates a random token of the requested size
     #
-    # Minimum size is 2 since the last character is a check character
+    # @note Minimum size is 2 since the last character is a check character
+    # @return [String] random token with check character
     def generate(output_size: 10)
       raise(MinSizeTwo) if output_size < 2
 
@@ -52,7 +54,9 @@ module HumanReadable
     # * Remove characters not in available character set
     # * Validates the check character
     #
-    # Return value: Valid token or nil
+    # @param input [String] the candidate token
+    # @return [String] possibly modified token if valid
+    # @return [nil] if the token isn't valid
     def valid_token?(input)
       return unless input.is_a?(String)
 
@@ -74,7 +78,8 @@ module HumanReadable
     #
     # Manipulate by configuring +substitution_hash+
     #
-    # DEFAULT: All number and uppercase letters except for ILOU
+    # DEFAULT: Digits 0-9 and uppercase letters A-Z except for ILOU
+    # @return [Array] of available characters
     def charset
       @charset ||=
         begin
@@ -85,6 +90,8 @@ module HumanReadable
     end
 
     # Reset configuration and memoizations
+    #
+    # @return [Array] list of variables reset
     def reset
       instance_variables.each { |sym| remove_instance_variable(sym) }
     end

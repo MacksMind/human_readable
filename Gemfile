@@ -15,6 +15,8 @@ gem 'rspec', '~> 3.0'
 # Clean code
 gem 'rubocop'
 # More faster
-gem('rubocop-performance')
+gem 'rubocop-performance'
 # More better
 gem 'rubocop-rspec'
+# Documentation
+gem 'yard'

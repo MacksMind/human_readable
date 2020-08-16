@@ -54,6 +54,7 @@ GEM
       rubocop (>= 0.87.0)
     ruby-progressbar (1.10.1)
     unicode-display_width (1.7.0)
+    yard (0.9.25)
 
 PLATFORMS
   ruby
@@ -66,6 +67,7 @@ DEPENDENCIES
   rubocop
   rubocop-performance
   rubocop-rspec
+  yard
 
 BUNDLED WITH
    2.1.4
