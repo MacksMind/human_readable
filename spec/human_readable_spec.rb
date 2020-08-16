@@ -155,5 +155,30 @@ RSpec.describe HumanReadable do
 
       it { is_expected.to eq(valid_tokens) }
     end
+
+    context 'with digits only' do
+      before do
+        described_class.configure do |c|
+          c.substitution_hash = Hash[('A'..'Z').map { |digit| [digit, nil] }]
+        end
+      end
+
+      it 'has a numeric charset' do
+        expect(described_class.charset).to eq(('0'..'9').to_a)
+      end
+
+      {
+        Visa: '4242424242424242',
+        MasterCard: '5555555555554444',
+        AmericanExpress: '378282246310005',
+        Discover: '6011111111111117'
+      }.each do |brand, number|
+        context "validates #{brand}" do
+          let(:input) { [number] }
+
+          it { is_expected.to eq([number]) }
+        end
+      end
+    end
   end
 end
