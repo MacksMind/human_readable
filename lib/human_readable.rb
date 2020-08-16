@@ -15,11 +15,15 @@ module HumanReadable
     # Yields block for configuration
     #
     #   HumanReadable.configure do |c|
+    #
+    #     # Substitution hash
     #     c.substitution_hash[:B] = 8
     #     c.substitution_hash[:U] = nil
-    #     c.substitution_hash['$'] = '$'
     #     # or equivalently
-    #     c.substitution_hash = { I: 1, L: 1, O: 0, U: nil, B: 8, '$' => '$'}
+    #     c.substitution_hash = { I: 1, L: 1, O: 0, U: nil, B: 8}
+    #
+    #     # Extend charset
+    #     c.extend_chars << %w[~ ! @ $]
     #   end
     #
     # Specified keys won't be used during generation, and values will be substituted during
@@ -31,10 +35,10 @@ module HumanReadable
     #   substitution_hash: { I: 1, L: 1, O: 0, U: :V }
     #
     # @note Changing substitution_hash keys alters the check character, invalidating previous tokens.
-    # @return [Hash] resulting substitution hash
+    # @return [nil]
     def configure
       yield(configuration)
-      configuration.substitution_hash
+      nil
     end
 
     # Generates a random token of the requested size
@@ -83,7 +87,14 @@ module HumanReadable
     def charset
       @charset ||=
         begin
-          array = (('0'..'9').to_a + ('A'..'Z').to_a - trans_from.chars + trans_to.chars - nil_substitutions)
+          array = (
+            ('0'..'9').to_a +
+            ('A'..'Z').to_a -
+            trans_from.chars +
+            trans_to.chars +
+            configuration.extend_chars -
+            nil_substitutions
+          )
           array.uniq!
           array.sort!
         end
@@ -100,7 +111,8 @@ module HumanReadable
 
     def configuration
       @configuration ||= OpenStruct.new(
-        substitution_hash: { I: 1, L: 1, O: 0, U: :V }
+        substitution_hash: { I: 1, L: 1, O: 0, U: :V },
+        extend_chars: []
       )
     end
 

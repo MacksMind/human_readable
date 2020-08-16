@@ -48,9 +48,11 @@ For other lengths (2..x), use `HumanReadable.generate(output_size: 50)`.
       # Modifications
       c.substitution_hash[:B] = 8
       c.substitution_hash[:U] = nil
-      c.substitution_hash['$'] = '$'
       # or equivalently
-      c.substitution_hash = { I: 1, L: 1, O: 0, U: nil, B: 8, '$' => '$'}
+      c.substitution_hash = { I: 1, L: 1, O: 0, U: nil, B: 8}
+
+      # Extend charset
+      c.extend_chars << %w[~ ! @ $]
     end
 
 ## Development

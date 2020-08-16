@@ -3,16 +3,32 @@
 # Copyright 2020 Mack Earnhardt
 
 RSpec.describe HumanReadable do
+  before do
+    described_class.reset
+  end
+
   it 'has a version number' do
     expect(HumanReadable::VERSION).not_to be(nil)
   end
 
+  describe '#charset' do
+    context 'with non-default chars in extended_chars' do
+      let(:extensions) { ['~', '@', '#', '$'] }
+
+      before do
+        described_class.configure do |c|
+          c.extend_chars = extensions
+        end
+      end
+
+      it 'extends the charset' do
+        expect(described_class.charset & extensions).to match_array(extensions)
+      end
+    end
+  end
+
   describe '#generate' do
     subject(:output) { described_class.generate }
-
-    before do
-      described_class.reset
-    end
 
     it 'generates a 10 digit token by default' do
       expect(output.size).to eq(10)
@@ -74,10 +90,6 @@ RSpec.describe HumanReadable do
     end
 
     let(:input) { valid_tokens }
-
-    before do
-      described_class.reset
-    end
 
     it { is_expected.to eq(valid_tokens) }
 
