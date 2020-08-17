@@ -27,7 +27,7 @@ RSpec.describe HumanReadable do
     end
 
     context 'with default chars in exclude_chars' do
-      let(:exclusions) { %w[F C K] }
+      let(:exclusions) { %w[X Y Z] }
 
       before do
         described_class.configure do |c|

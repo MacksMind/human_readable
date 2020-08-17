@@ -15,6 +15,8 @@ module HumanReadable
     # Yields block for configuration
     #
     #   HumanReadable.configure do |c|
+    #     c.substitution_hash = { %w[I L] => 1, O: 0, U: :V } # Default
+    #     c.output_size = 10                                  # Default
     #
     #     # Substitution hash
     #     c.substitution_hash[:B] = 8
@@ -26,16 +28,13 @@ module HumanReadable
     #     c.extend_chars = %w[~ ! @ $]
     #
     #     # Exclude charset
-    #     c.exclude_chars = %w[F C K]
+    #     c.exclude_chars = %w[X Y Z]
     #   end
     #
     # Specified keys won't be used during generation, and values will be substituted during
     # validation, increasing the likelihood that a misread character can be restored. Extend
     # or replace the substitutions to alter the character set. For convenience, digits
     # and symbols are allowed in the hash and are translated to characters during usage.
-    #
-    # DEFAULT:
-    #   substitution_hash: { %w[I L] => 1, O: 0, U: :V }
     #
     # @note Changing substitution_hash keys alters the check character, invalidating previous tokens.
     # @return [nil]
@@ -48,7 +47,7 @@ module HumanReadable
     #
     # @note Minimum size is 2 since the last character is a check character
     # @return [String] random token with check character
-    def generate(output_size: 10)
+    def generate(output_size: configuration.output_size)
       raise(MinSizeTwo) if output_size < 2
 
       (token = generate_random(output_size - 1)) + check_character(token)
@@ -117,7 +116,8 @@ module HumanReadable
       @configuration ||= OpenStruct.new(
         substitution_hash: { %w[I L] => 1, O: 0, U: :V },
         extend_chars: [],
-        exclude_chars: []
+        exclude_chars: [],
+        output_size: 10
       )
     end
 

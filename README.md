@@ -43,7 +43,8 @@ For other lengths (2..x), use `HumanReadable.generate(output_size: 50)`.
 
 
     HumanReadable.configure do |c|
-      # Default: substitution_hash = { %w[I L] => 1, O: 0, U: :V }
+      c.substitution_hash = { %w[I L] => 1, O: 0, U: :V } # Default
+      c.output_size = 10                                  # Default
 
       # Modifications
       c.substitution_hash[:B] = 8
@@ -55,7 +56,7 @@ For other lengths (2..x), use `HumanReadable.generate(output_size: 50)`.
       c.extend_chars << %w[~ ! @ $]
 
       # Exclude charset
-      c.exclude_chars = %w[F C K]
+      c.exclude_chars = %w[X Y Z]
     end
 
 ## Development
