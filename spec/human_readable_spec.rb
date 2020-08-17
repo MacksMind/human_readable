@@ -17,7 +17,7 @@ RSpec.describe HumanReadable do
 
       before do
         described_class.configure do |c|
-          c.extend_chars = extensions
+          c.extend_chars << extensions
         end
       end
 
@@ -31,7 +31,7 @@ RSpec.describe HumanReadable do
 
       before do
         described_class.configure do |c|
-          c.exclude_chars = exclusions
+          c.exclude_chars << exclusions
         end
       end
 
@@ -199,6 +199,108 @@ RSpec.describe HumanReadable do
           it { is_expected.to eq([number]) }
         end
       end
+    end
+  end
+
+  describe 'Emoji support' do
+    subject { input.map { |token| described_class.valid_token?(token) } }
+
+    let(:valid_tokens) { Array.new(100) { described_class.generate } }
+
+    let(:thumbs_up_skin_tones) { %w[👍 👍🏻 👍🏼 👍🏽 👍🏾 👍🏿] }
+
+    before do
+      described_class.configure do |c|
+        c.remove_skin_tones = true
+      end
+    end
+
+    context 'with rock paper scissors lizard spock' do
+      subject(:token) { described_class.generate(output_size: 1000) }
+
+      let(:extensions_with_skin_tone) { %w[⛰️ 🧻 ✂️ 🦎 🖖🏻] }
+      let(:extensions) { %w[⛰️ 🧻 ✂️ 🦎 🖖] }
+
+      before do
+        described_class.configure do |c|
+          c.extend_chars << extensions_with_skin_tone
+        end
+      end
+
+      it 'extends the charset' do
+        expect(described_class.charset & extensions).to match_array(extensions)
+      end
+
+      it 'uses the whole charset' do
+        expect(token.each_grapheme_cluster.to_a & extensions).to match_array(extensions)
+      end
+
+      it 'generates a valid token' do
+        expect(described_class.valid_token?(token)).to eq(token)
+      end
+    end
+
+    context 'with black hearts to red' do
+      let(:input) do
+        valid_tokens.map do |token|
+          array =
+            token.each_grapheme_cluster.map do |c|
+              c == '❤️' ? '🖤' : c
+            end
+          array.join
+        end
+      end
+
+      before do
+        described_class.configure do |c|
+          c.substitution_hash['🖤'] = '❤️'
+        end
+      end
+
+      it { is_expected.to eq(valid_tokens) }
+    end
+
+    context 'with removed skin tones' do
+      let(:input) do
+        valid_tokens.map do |token|
+          array =
+            token.each_grapheme_cluster.map do |c|
+              c == '👍🏿' ? thumbs_up_skin_tones.sample : c
+            end
+          array.join
+        end
+      end
+
+      before do
+        described_class.configure do |c|
+          c.substitution_hash[thumbs_up_skin_tones] = '👍🏿'
+          c.extend_chars << thumbs_up_skin_tones.first
+        end
+      end
+
+      it { is_expected.to eq(valid_tokens) }
+    end
+
+    context 'with thumbs up for all the people' do
+      let(:input) do
+        valid_tokens.map do |token|
+          array =
+            token.each_grapheme_cluster.map do |c|
+              c == '👍🏿' ? thumbs_up_skin_tones.sample : c
+            end
+          array.join
+        end
+      end
+
+      before do
+        described_class.configure do |c|
+          c.substitution_hash[thumbs_up_skin_tones] = '👍🏿'
+          c.extend_chars << thumbs_up_skin_tones.first
+          c.remove_skin_tones = false
+        end
+      end
+
+      it { is_expected.to eq(valid_tokens) }
     end
   end
 end

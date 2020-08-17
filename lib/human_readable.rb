@@ -6,7 +6,7 @@ require 'human_readable/version'
 require 'ostruct'
 require 'securerandom'
 
-# Human readable random tokens with limited ambiguous characters
+# Human readable random tokens without ambiguous characters, and optional Emoji support
 module HumanReadable
   # +#generate+ output_size must be >= 2 due to check character
   class MinSizeTwo < StandardError; end
@@ -29,6 +29,17 @@ module HumanReadable
     #
     #     # Exclude charset
     #     c.exclude_chars = %w[X Y Z]
+    #
+    #     # Supports Emoji!!
+    #     c.extend_chars << %w[⛰️ 🧻 ✂️ 🦎 🖖]
+    #     c.substitution_hash['🖤'] = '❤️'
+    #
+    #     # And understands skin tones
+    #     c.remove_skin_tones = false                         # Default
+    #     c.substitution_hash[%w[👍🏻 👍🏼 👍🏽 👍🏾 👍🏿]] = '👍'
+    #     # -or-
+    #     c.remove_skin_tones = true
+    #     c.extend_chars << '👍'
     #   end
     #
     # Specified keys won't be used during generation, and values will be substituted during
@@ -50,7 +61,7 @@ module HumanReadable
     def generate(output_size: configuration.output_size)
       raise(MinSizeTwo) if output_size < 2
 
-      (token = generate_random(output_size - 1)) + check_character(token)
+      "#{token = generate_random(output_size - 1)}#{check_character(token)}"
     end
 
     # Clean and validate a candidate token
@@ -66,7 +77,11 @@ module HumanReadable
     def valid_token?(input)
       return unless input.is_a?(String)
 
-      codepoints = input.upcase.tr(trans_from, trans_to).chars.map! { |c| charset.index(c) }
+      codepoints =
+        input.upcase.each_grapheme_cluster.map do |c|
+          c = (c.chars - SKIN_TONES).join if configuration.remove_skin_tones
+          charset_hash[validation_hash[c] || c]
+        end
       codepoints.compact!
 
       return if codepoints.size < 2
@@ -91,12 +106,11 @@ module HumanReadable
         begin
           array = (
             ('0'..'9').to_a +
-            ('A'..'Z').to_a -
-            trans_from.chars +
-            trans_to.chars +
-            configuration.extend_chars -
-            configuration.exclude_chars -
-            nil_substitutions
+            ('A'..'Z').to_a +
+            extend_chars -
+            exclude_chars -
+            validation_hash.keys +
+            validation_hash.values
           )
           array.uniq!
           array.sort!
@@ -112,12 +126,15 @@ module HumanReadable
 
   private
 
+    SKIN_TONES = %w[🏻 🏼 🏽 🏾 🏿].freeze
+
     def configuration
       @configuration ||= OpenStruct.new(
         substitution_hash: { %w[I L] => 1, O: 0, U: :V },
         extend_chars: [],
         exclude_chars: [],
-        output_size: 10
+        output_size: 10,
+        remove_skin_tones: false
       )
     end
 
@@ -133,8 +150,6 @@ module HumanReadable
     # Instead we attempt to optimize the number of bytes generated with each
     # call to SecureRandom.
     def generate_random(random_size)
-      return '' unless random_size.positive?
-
       codepoints = []
 
       while codepoints.size < random_size
@@ -157,11 +172,11 @@ module HumanReadable
 
     # Compute check character using Luhn mod N algorithm
     #
-    # *CAUTION:* Changing substitution_hash keys alters the output
+    # CAUTION: Changing charset alters the output
     def check_character(input)
       array =
-        input.chars.reverse.each_with_index.map do |c, i|
-          d = charset.index(c)
+        input.each_grapheme_cluster.to_a.reverse.each_with_index.map do |c, i|
+          d = charset_hash[c]
           d *= 2 if i.even?
           d / charset_size + d % charset_size
         end
@@ -193,42 +208,39 @@ module HumanReadable
       @charset_size ||= charset.size
     end
 
-    def nil_substitutions
-      @nil_substitutions ||=
-        begin
-          array = configuration.substitution_hash.each.map { |k, v| k if v.nil? }
-          array.flatten!
-          array.compact!
-          array.map!(&:to_s)
-          array.map!(&:upcase)
-        end
+    def char_cleanup(array)
+      array.compact!
+      array.flatten!
+      array.map!(&:to_s)
+      array.map! { |element| (element.chars - SKIN_TONES).join } if configuration.remove_skin_tones
+      array.map!(&:upcase)
     end
 
-    def trans_from
-      @trans_from ||=
-        begin
-          array = configuration.substitution_hash.each.map { |k, v| k unless v.nil? }
-          array.flatten!
-          array.compact!
-          array.map!(&:to_s)
-          array.map!(&:upcase)
-          array.join
-        end
+    def extend_chars
+      @extend_chars ||= char_cleanup(configuration.extend_chars)
     end
 
-    def trans_to
-      @trans_to ||=
+    def exclude_chars
+      @exclude_chars ||= char_cleanup(
+        configuration.exclude_chars + configuration.substitution_hash.each.map { |k, v| k if v.nil? }
+      )
+    end
+
+    # Flattened version of substitution_hash
+    def validation_hash
+      @validation_hash ||=
         begin
           array =
             configuration.substitution_hash.map do |k, v|
-              (k.is_a?(Array) ? Array.new(k.size) { v } : v) unless v.nil?
+              (k.is_a?(Array) ? k.map { |k1| [k1, v] } : [k, v]) unless v.nil?
             end
-          array.flatten!
-          array.compact!
-          array.map!(&:to_s)
-          array.map!(&:upcase)
-          array.join
+          array = char_cleanup(array)
+          Hash[*array]
         end
+    end
+
+    def charset_hash
+      @charset_hash ||= Hash[charset.each_with_index.map { |char, i| [char, i] }]
     end
   end
 end

@@ -5,12 +5,34 @@
 
 require 'bundler/setup'
 require 'human_readable'
+require 'ruby-prof'
 
-t = Time.now
+# Warmup memoizations and expose token in outer block
+token = HumanReadable.valid_token?(HumanReadable.generate)
 
-500_000.times do
+RubyProf.measure_mode = RubyProf::PROCESS_TIME
+generate = RubyProf.profile { 100.times { HumanReadable.generate } }
+validate = RubyProf.profile { 100.times { HumanReadable.valid_token?(token) } }
+
+printer = RubyProf::GraphPrinter.new(generate)
+printer.print($stdout, {})
+
+printer = RubyProf::GraphPrinter.new(validate)
+printer.print($stdout, {})
+
+times = {
+  generate: 0,
+  validate: 0
+}
+
+200_000.times do
+  t = Time.now
   token = HumanReadable.generate
-  raise unless HumanReadable.valid_token?(token)
+  times[:generate] += Time.now - t
+
+  t = Time.now
+  HumanReadable.valid_token?(token)
+  times[:validate] += Time.now - t
 end
 
-puts(Time.now - t)
+pp(times.merge({ total: times.values.sum }))

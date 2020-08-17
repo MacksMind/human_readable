@@ -129,7 +129,7 @@
 
 </div>
         </dt>
-        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>0.8.0</span><span class='tstring_end'>&#39;</span></span></pre></dd>
+        <dd><pre class="code"><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>0.9.0</span><span class='tstring_end'>&#39;</span></span></pre></dd>
       
     </dl>
   
@@ -199,7 +199,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#generate-class_method" title="generate (class method)">.<strong>generate</strong>(output_size: 10)  &#x21d2; String </a>
+      <a href="#generate-class_method" title="generate (class method)">.<strong>generate</strong>(output_size: configuration.output_size)  &#x21d2; String </a>
     
 
     
@@ -325,35 +325,35 @@
       <pre class="lines">
 
 
-87
-88
-89
-90
-91
-92
-93
-94
-95
-96
-97
-98
-99
-100
-101</pre>
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/human_readable.rb', line 87</span>
+      <pre class="code"><span class="info file"># File 'lib/human_readable.rb', line 104</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_charset'>charset</span>
   <span class='ivar'>@charset</span> <span class='op'>||=</span>
     <span class='kw'>begin</span>
       <span class='id identifier rubyid_array'>array</span> <span class='op'>=</span> <span class='lparen'>(</span>
         <span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>0</span><span class='tstring_end'>&#39;</span></span><span class='op'>..</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>9</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_a'>to_a</span> <span class='op'>+</span>
-        <span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>A</span><span class='tstring_end'>&#39;</span></span><span class='op'>..</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Z</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_a'>to_a</span> <span class='op'>-</span>
-        <span class='id identifier rubyid_trans_from'>trans_from</span><span class='period'>.</span><span class='id identifier rubyid_chars'>chars</span> <span class='op'>+</span>
-        <span class='id identifier rubyid_trans_to'>trans_to</span><span class='period'>.</span><span class='id identifier rubyid_chars'>chars</span> <span class='op'>+</span>
-        <span class='id identifier rubyid_configuration'>configuration</span><span class='period'>.</span><span class='id identifier rubyid_extend_chars'>extend_chars</span> <span class='op'>-</span>
-        <span class='id identifier rubyid_nil_substitutions'>nil_substitutions</span>
+        <span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>A</span><span class='tstring_end'>&#39;</span></span><span class='op'>..</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Z</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_to_a'>to_a</span> <span class='op'>+</span>
+        <span class='id identifier rubyid_extend_chars'>extend_chars</span> <span class='op'>-</span>
+        <span class='id identifier rubyid_exclude_chars'>exclude_chars</span> <span class='op'>-</span>
+        <span class='id identifier rubyid_validation_hash'>validation_hash</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span> <span class='op'>+</span>
+        <span class='id identifier rubyid_validation_hash'>validation_hash</span><span class='period'>.</span><span class='id identifier rubyid_values'>values</span>
       <span class='rparen'>)</span>
       <span class='id identifier rubyid_array'>array</span><span class='period'>.</span><span class='id identifier rubyid_uniq!'>uniq!</span>
       <span class='id identifier rubyid_array'>array</span><span class='period'>.</span><span class='id identifier rubyid_sort!'>sort!</span>
@@ -387,24 +387,35 @@
 <p>Yields block for configuration</p>
 
 <pre class="code ruby"><code class="ruby"><span class='const'><span class='object_link'><a href="" title="HumanReadable (module)">HumanReadable</a></span></span><span class='period'>.</span><span class='id identifier rubyid_configure'>configure</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span>
-
+  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_substitution_hash'>substitution_hash</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='qwords_beg'>%w[</span><span class='tstring_content'>I</span><span class='words_sep'> </span><span class='tstring_content'>L</span><span class='tstring_end'>]</span></span> <span class='op'>=&gt;</span> <span class='int'>1</span><span class='comma'>,</span> <span class='label'>O:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>U:</span> <span class='symbol'>:V</span> <span class='rbrace'>}</span> <span class='comment'># Default
+</span>  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_output_size'>output_size</span> <span class='op'>=</span> <span class='int'>10</span>                                  <span class='comment'># Default
+</span>
   <span class='comment'># Substitution hash
 </span>  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_substitution_hash'>substitution_hash</span><span class='lbracket'>[</span><span class='symbol'>:B</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='int'>8</span>
   <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_substitution_hash'>substitution_hash</span><span class='lbracket'>[</span><span class='symbol'>:U</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>nil</span>
   <span class='comment'># or equivalently
-</span>  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_substitution_hash'>substitution_hash</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='label'>I:</span> <span class='int'>1</span><span class='comma'>,</span> <span class='label'>L:</span> <span class='int'>1</span><span class='comma'>,</span> <span class='label'>O:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>U:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>B:</span> <span class='int'>8</span><span class='rbrace'>}</span>
+</span>  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_substitution_hash'>substitution_hash</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='qwords_beg'>%w[</span><span class='tstring_content'>I</span><span class='words_sep'> </span><span class='tstring_content'>L</span><span class='tstring_end'>]</span></span> <span class='op'>=&gt;</span> <span class='int'>1</span><span class='comma'>,</span> <span class='label'>O:</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>U:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>B:</span> <span class='int'>8</span><span class='rbrace'>}</span>
 
   <span class='comment'># Extend charset
-</span>  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_extend_chars'>extend_chars</span> <span class='op'>&lt;&lt;</span> <span class='qwords_beg'>%w[</span><span class='tstring_content'>~</span><span class='words_sep'> </span><span class='tstring_content'>!</span><span class='words_sep'> </span><span class='tstring_content'>@</span><span class='words_sep'> </span><span class='tstring_content'>$</span><span class='tstring_end'>]</span></span>
+</span>  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_extend_chars'>extend_chars</span> <span class='op'>=</span> <span class='qwords_beg'>%w[</span><span class='tstring_content'>~</span><span class='words_sep'> </span><span class='tstring_content'>!</span><span class='words_sep'> </span><span class='tstring_content'>@</span><span class='words_sep'> </span><span class='tstring_content'>$</span><span class='tstring_end'>]</span></span>
+
+  <span class='comment'># Exclude charset
+</span>  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_exclude_chars'>exclude_chars</span> <span class='op'>=</span> <span class='qwords_beg'>%w[</span><span class='tstring_content'>X</span><span class='words_sep'> </span><span class='tstring_content'>Y</span><span class='words_sep'> </span><span class='tstring_content'>Z</span><span class='tstring_end'>]</span></span>
+
+  <span class='comment'># Supports Emoji!!
+</span>  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_extend_chars'>extend_chars</span> <span class='op'>&lt;&lt;</span> <span class='qwords_beg'>%w[</span><span class='tstring_content'>⛰️</span><span class='words_sep'> </span><span class='tstring_content'>🧻</span><span class='words_sep'> </span><span class='tstring_content'>✂️</span><span class='words_sep'> </span><span class='tstring_content'>🦎</span><span class='words_sep'> </span><span class='tstring_content'>🖖</span><span class='tstring_end'>]</span></span>
+  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_substitution_hash'>substitution_hash</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>🖤</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>❤️</span><span class='tstring_end'>&#39;</span></span>
+
+  <span class='comment'># And understands skin tones
+</span>  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_remove_skin_tones'>remove_skin_tones</span> <span class='op'>=</span> <span class='kw'>false</span>                         <span class='comment'># Default
+</span>  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_substitution_hash'>substitution_hash</span><span class='lbracket'>[</span><span class='qwords_beg'>%w[</span><span class='tstring_content'>👍🏻</span><span class='words_sep'> </span><span class='tstring_content'>👍🏼</span><span class='words_sep'> </span><span class='tstring_content'>👍🏽</span><span class='words_sep'> </span><span class='tstring_content'>👍🏾</span><span class='words_sep'> </span><span class='tstring_content'>👍🏿</span><span class='tstring_end'>]</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>👍</span><span class='tstring_end'>&#39;</span></span>
+  <span class='comment'># -or-
+</span>  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_remove_skin_tones'>remove_skin_tones</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_extend_chars'>extend_chars</span> <span class='op'>&lt;&lt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>👍</span><span class='tstring_end'>&#39;</span></span>
 <span class='kw'>end</span>
 </code></pre>
 
 <p>Specified keys won&#39;t be used during generation, and values will be substituted during validation, increasing the likelihood that a misread character can be restored. Extend or replace the substitutions to alter the character set. For convenience, digits and symbols are allowed in the hash and are translated to characters during usage.</p>
-
-<p>DEFAULT:</p>
-
-<pre class="code ruby"><code class="ruby">substitution_hash: { I: 1, L: 1, O: 0, U: :V }
-</code></pre>
 
 
   </div>
@@ -444,13 +455,13 @@
       <pre class="lines">
 
 
-39
-40
-41
-42</pre>
+52
+53
+54
+55</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/human_readable.rb', line 39</span>
+      <pre class="code"><span class="info file"># File 'lib/human_readable.rb', line 52</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_configure'>configure</span>
   <span class='kw'>yield</span><span class='lparen'>(</span><span class='id identifier rubyid_configuration'>configuration</span><span class='rparen'>)</span>
@@ -464,7 +475,7 @@
       <div class="method_details ">
   <h3 class="signature " id="generate-class_method">
   
-    .<strong>generate</strong>(output_size: 10)  &#x21d2; <tt>String</tt> 
+    .<strong>generate</strong>(output_size: configuration.output_size)  &#x21d2; <tt>String</tt> 
   
 
   
@@ -526,19 +537,19 @@
       <pre class="lines">
 
 
-48
-49
-50
-51
-52</pre>
+61
+62
+63
+64
+65</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/human_readable.rb', line 48</span>
+      <pre class="code"><span class="info file"># File 'lib/human_readable.rb', line 61</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_generate'>generate</span><span class='lparen'>(</span><span class='label'>output_size:</span> <span class='int'>10</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_generate'>generate</span><span class='lparen'>(</span><span class='label'>output_size:</span> <span class='id identifier rubyid_configuration'>configuration</span><span class='period'>.</span><span class='id identifier rubyid_output_size'>output_size</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="HumanReadable/MinSizeTwo.html" title="HumanReadable::MinSizeTwo (class)">MinSizeTwo</a></span></span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_output_size'>output_size</span> <span class='op'>&lt;</span> <span class='int'>2</span>
 
-  <span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='id identifier rubyid_generate_random'>generate_random</span><span class='lparen'>(</span><span class='id identifier rubyid_output_size'>output_size</span> <span class='op'>-</span> <span class='int'>1</span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='op'>+</span> <span class='id identifier rubyid_check_character'>check_character</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_token'>token</span> <span class='op'>=</span> <span class='id identifier rubyid_generate_random'>generate_random</span><span class='lparen'>(</span><span class='id identifier rubyid_output_size'>output_size</span> <span class='op'>-</span> <span class='int'>1</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_check_character'>check_character</span><span class='lparen'>(</span><span class='id identifier rubyid_token'>token</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -589,12 +600,12 @@
       <pre class="lines">
 
 
-106
-107
-108</pre>
+123
+124
+125</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/human_readable.rb', line 106</span>
+      <pre class="code"><span class="info file"># File 'lib/human_readable.rb', line 123</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset'>reset</span>
   <span class='id identifier rubyid_instance_variables'>instance_variables</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_sym'>sym</span><span class='op'>|</span> <span class='id identifier rubyid_remove_instance_variable'>remove_instance_variable</span><span class='lparen'>(</span><span class='id identifier rubyid_sym'>sym</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
@@ -691,30 +702,38 @@
       <pre class="lines">
 
 
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
 77
 78
-79</pre>
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/human_readable.rb', line 64</span>
+      <pre class="code"><span class="info file"># File 'lib/human_readable.rb', line 77</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_valid_token?'>valid_token?</span><span class='lparen'>(</span><span class='id identifier rubyid_input'>input</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_input'>input</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_codepoints'>codepoints</span> <span class='op'>=</span> <span class='id identifier rubyid_input'>input</span><span class='period'>.</span><span class='id identifier rubyid_upcase'>upcase</span><span class='period'>.</span><span class='id identifier rubyid_tr'>tr</span><span class='lparen'>(</span><span class='id identifier rubyid_trans_from'>trans_from</span><span class='comma'>,</span> <span class='id identifier rubyid_trans_to'>trans_to</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_chars'>chars</span><span class='period'>.</span><span class='id identifier rubyid_map!'>map!</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='id identifier rubyid_charset'>charset</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span><span class='lparen'>(</span><span class='id identifier rubyid_c'>c</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
+  <span class='id identifier rubyid_codepoints'>codepoints</span> <span class='op'>=</span>
+    <span class='id identifier rubyid_input'>input</span><span class='period'>.</span><span class='id identifier rubyid_upcase'>upcase</span><span class='period'>.</span><span class='id identifier rubyid_each_grapheme_cluster'>each_grapheme_cluster</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span>
+      <span class='id identifier rubyid_c'>c</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_chars'>chars</span> <span class='op'>-</span> <span class='const'>SKIN_TONES</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span> <span class='kw'>if</span> <span class='id identifier rubyid_configuration'>configuration</span><span class='period'>.</span><span class='id identifier rubyid_remove_skin_tones'>remove_skin_tones</span>
+      <span class='id identifier rubyid_charset_hash'>charset_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_validation_hash'>validation_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_c'>c</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='id identifier rubyid_c'>c</span><span class='rbracket'>]</span>
+    <span class='kw'>end</span>
   <span class='id identifier rubyid_codepoints'>codepoints</span><span class='period'>.</span><span class='id identifier rubyid_compact!'>compact!</span>
 
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_codepoints'>codepoints</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>&lt;</span> <span class='int'>2</span>
@@ -737,7 +756,7 @@
 </div>
 
       <div id="footer">
-  Generated on Sun Aug 16 17:24:45 2020 by
+  Generated on Mon Aug 17 14:51:55 2020 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.25 (ruby-2.7.1).
 </div>

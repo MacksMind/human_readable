@@ -18,5 +18,7 @@ gem 'rubocop'
 gem 'rubocop-performance'
 # More better
 gem 'rubocop-rspec'
+# More faster, again
+gem 'ruby-prof'
 # Documentation
 gem 'yard'

@@ -4,7 +4,7 @@ require:
 
 AllCops:
   EnabledByDefault: true
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 2.5
   Exclude:
     - 'bin/*'
 
@@ -43,14 +43,15 @@ Style/Copyright:
   AutocorrectNotice: '# Copyright 2020 Mack Earnhardt'
   Notice: 'Copyright (\(c\) )?2[0-9]{3} .+'
 
+Style/DisableCopsWithinSourceCodeDirective:
+  Exclude:
+    - 'spec/human_readable_spec.rb'
+
 Style/MethodCallWithArgsParentheses:
   IgnoredMethods:
     - describe
     - gem
     - not_to
-    - p
-    - pp
-    - puts
     - require
     - require_relative
     - source

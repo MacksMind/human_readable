@@ -2,7 +2,7 @@
 
 # HumanReadable
 
-Human readable random tokens with limited ambiguous characters.
+Human readable random tokens without ambiguous characters, and optional Emoji support.
 
 Focus is readability in poor conditions or from potentially damaged printed documents rather than cryptographic uses.
 Despite this focus, SecureRandom is used to help avoid collisions.
@@ -30,33 +30,45 @@ Or install it yourself as:
 ## Usage
 
 For 10 characters of the default character set, use `HumanReadable.generate`.
-For other lengths (2..x), use `HumanReadable.generate(output_size: 50)`.
+For other lengths (2..x), use `HumanReadable.generate(output_size: 50)`, or change `output_size` in the configuration.
 
 ## Configuration
 
-* Change available characters and substitution by manipulating `substitution_hash`
-* To include non-default characters, add a self-reference to the hash
+* Add or change substitutions by configuring `substitution_hash`
+* To include non-default characters without substitution, configure `extend_chars`
+* To exclude default characters, configure `exclude_chars`
 * Inspect available characters using `HumanReadable.charset`
-* For convenience, numbers and symbols are allowed in the hash and are translated to characters during usage
+* For convenience, numbers and symbols are allowed in `substitution_hash` and are translated to characters during usage
 
-**CAUTION:** Changing `substitution_hash` keys alters the check character, invalidating previous tokens.
+**CAUTION:** Changing available characters alters the check character, invalidating previous tokens.
 
 
     HumanReadable.configure do |c|
       c.substitution_hash = { %w[I L] => 1, O: 0, U: :V } # Default
       c.output_size = 10                                  # Default
 
-      # Modifications
+      # Add or change substitutions
       c.substitution_hash[:B] = 8
       c.substitution_hash[:U] = nil
       # or equivalently
       c.substitution_hash = { %w[I L] => 1, O: 0, U: nil, B: 8}
 
-      # Extend charset
+      # Extend charset when no substitution is needed
       c.extend_chars << %w[~ ! @ $]
 
-      # Exclude charset
+      # Exclude from charset
       c.exclude_chars = %w[X Y Z]
+
+      # Supports Emoji!!
+      c.extend_chars << %w[⛰️ 🧻 ✂️ 🦎 🖖]
+      c.substitution_hash['🖤'] = '❤️'
+
+      # And understands skin tones
+      c.remove_skin_tones = false                         # Default
+      c.substitution_hash[%w[👍🏻 👍🏼 👍🏽 👍🏾 👍🏿]] = '👍'
+      # -or-
+      c.remove_skin_tones = true
+      c.extend_chars << '👍'
     end
 
 ## Development
