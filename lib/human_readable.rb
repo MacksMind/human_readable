@@ -3,7 +3,6 @@
 # Copyright 2020 Mack Earnhardt
 
 require_relative 'human_readable/version'
-require 'ostruct'
 require 'securerandom'
 
 # Human readable random tokens without ambiguous characters, and optional Emoji support
