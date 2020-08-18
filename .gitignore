@@ -12,3 +12,7 @@
 
 # Editor backup
 *~
+
+# rake human_readable:performance
+generate.html
+validate.html

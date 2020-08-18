@@ -2,7 +2,7 @@
 
 # Copyright 2020 Mack Earnhardt
 
-require 'human_readable/version'
+require_relative 'human_readable/version'
 require 'ostruct'
 require 'securerandom'
 
@@ -57,6 +57,7 @@ module HumanReadable
     # Generates a random token of the requested size
     #
     # @note Minimum size is 2 since the last character is a check character
+    # @param output_size [Integer] desired number of printable characters
     # @return [String] random token with check character
     def generate(output_size: configuration.output_size)
       raise(MinSizeTwo) if output_size < 2
@@ -72,14 +73,13 @@ module HumanReadable
     # * Validates the check character
     #
     # @param input [String] the candidate token
-    # @return [String] possibly modified token if valid
-    # @return [nil] if the token isn't valid
+    # @return [String, nil] possibly modified token if valid, else nil
     def valid_token?(input)
       return unless input.is_a?(String)
 
       codepoints =
         input.upcase.each_grapheme_cluster.map do |c|
-          c = (c.chars - SKIN_TONES).join if configuration.remove_skin_tones
+          c.gsub!(SKIN_TONE_REGEXP, '') if configuration.remove_skin_tones
           charset_hash[validation_hash[c] || c]
         end
       codepoints.compact!
@@ -97,9 +97,9 @@ module HumanReadable
 
     # Characters available for token generation
     #
-    # Manipulate by configuring +substitution_hash+
-    #
     # DEFAULT: Digits 0-9 and uppercase letters A-Z except for ILOU
+    #
+    # @note Manipulate via {#configure}
     # @return [Array] of available characters
     def charset
       @charset ||=
@@ -126,15 +126,24 @@ module HumanReadable
 
   private
 
-    SKIN_TONES = %w[🏻 🏼 🏽 🏾 🏿].freeze
+    SKIN_TONE_REGEXP = /[🏻🏼🏽🏾🏿]/.freeze
+
+    # HumanReadable configuration
+    Configuration = Struct.new(
+      :substitution_hash,
+      :extend_chars,
+      :exclude_chars,
+      :output_size,
+      :remove_skin_tones
+    )
 
     def configuration
-      @configuration ||= OpenStruct.new(
-        substitution_hash: { %w[I L] => 1, O: 0, U: :V },
-        extend_chars: [],
-        exclude_chars: [],
-        output_size: 10,
-        remove_skin_tones: false
+      @configuration ||= Configuration.new(
+        { %w[I L] => 1, O: 0, U: :V },
+        [],
+        [],
+        10,
+        false
       )
     end
 
@@ -212,7 +221,7 @@ module HumanReadable
       array.compact!
       array.flatten!
       array.map!(&:to_s)
-      array.map! { |element| (element.chars - SKIN_TONES).join } if configuration.remove_skin_tones
+      array.map! { |element| element.gsub(SKIN_TONE_REGEXP, '') } if configuration.remove_skin_tones
       array.map!(&:upcase)
     end
 

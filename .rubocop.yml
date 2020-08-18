@@ -35,10 +35,6 @@ Metrics/MethodLength:
 Metrics/ModuleLength:
   Enabled: false
 
-Performance/OpenStruct:
-  Exclude:
-    - 'lib/human_readable.rb'
-
 Style/Copyright:
   AutocorrectNotice: '# Copyright 2020 Mack Earnhardt'
   Notice: 'Copyright (\(c\) )?2[0-9]{3} .+'
@@ -49,6 +45,7 @@ Style/DisableCopsWithinSourceCodeDirective:
 
 Style/MethodCallWithArgsParentheses:
   IgnoredMethods:
+    - desc
     - describe
     - gem
     - not_to
