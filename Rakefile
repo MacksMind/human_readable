@@ -17,6 +17,7 @@ namespace :human_readable do
   task :performance do
     require_relative 'lib/human_readable'
     require 'ruby-prof'
+    require 'stringio'
 
     # Warmup memoizations and grab a valid token
     token = HumanReadable.valid_token?(HumanReadable.generate)
