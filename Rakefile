@@ -18,6 +18,10 @@ namespace :human_readable do
     require_relative 'lib/human_readable'
     require 'ruby-prof'
 
+    HumanReadable.configure do |c|
+      c.use_secure_random = true
+    end
+
     # Warmup memoizations and grab a valid token
     token = HumanReadable.valid_token?(HumanReadable.generate)
 

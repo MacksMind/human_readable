@@ -61,7 +61,14 @@ module HumanReadable
     def generate(output_size: configuration.output_size)
       raise(MinSizeTwo) if output_size < 2
 
-      "#{token = generate_random(output_size - 1)}#{check_character(token)}"
+      random_part =
+        if configuration.use_secure_random
+          generate_random(output_size - 1)
+        else
+          Array.new(output_size - 1) { charset.sample }.join
+        end
+
+      "#{random_part}#{check_character(random_part)}"
     end
 
     # Clean and validate a candidate token
@@ -133,7 +140,8 @@ module HumanReadable
       :extend_chars,
       :exclude_chars,
       :output_size,
-      :remove_skin_tones
+      :remove_skin_tones,
+      :use_secure_random
     )
 
     def configuration
@@ -142,7 +150,8 @@ module HumanReadable
         [],
         [],
         10,
-        false
+        false,
+        true
       )
     end
 

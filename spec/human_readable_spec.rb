@@ -94,6 +94,24 @@ RSpec.describe HumanReadable do
         expect(token).to include('$')
       end
     end
+
+    context 'without secure_random' do
+      before do
+        described_class.configure do |c|
+          c.use_secure_random = false
+        end
+      end
+
+      it 'generates a token' do
+        expect(output).not_to be(nil)
+      end
+
+      it "doesn't call SecureRandom" do
+        allow(SecureRandom).to receive(:random_bytes).and_return('QWERTY')
+        output
+        expect(SecureRandom).not_to have_received(:random_bytes)
+      end
+    end
   end
 
   describe '#valid_token?' do
